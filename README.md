@@ -25,7 +25,7 @@ The following will read *my_settings.ini* and apply them to */etc/global.ini*.
 ---
 - name: Merge settings
   ini_merge:
-    source: my_settings.ini
+    source: "{{ role_path }}/files/my_settings.ini"
     target: /etc/global.ini
 ```
 
@@ -34,3 +34,4 @@ Optionally you can specify `overwrite_values: no` to prevent from modifying
 
 Setting `no_extra_spaces: yes` will output the key value pairs as `key=value`
 instead of spacing them out as `key = value`. Note this will only work under Python 3.
+

@@ -3,9 +3,6 @@
 # Copyright: (c) 2020, Juan D Frias <juandfrias@gmail.com>
 # MIT License see LICENSE file for details
 
-from __future__ import print_function
-
-
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'status': ['stableinterface'],
@@ -52,7 +49,7 @@ EXAMPLES = '''
 # Merge INI files
 - name: Merge settings
   ini_merge:
-    source: my_settings.ini
+    source: "{{ role_path }}/files/my_settings.ini"
     target: global.ini
 '''
 
@@ -74,7 +71,7 @@ def run_module():
         source=dict(type='path', required=True),
         target=dict(type='path', required=True),
         overwrite_values=dict(type='bool', required=False, default=True),
-        no_extra_spaces=dict(type='bool', required=False),
+        no_extra_spaces=dict(type='bool', required=False, default=False),
     )
 
     result = dict(
@@ -93,14 +90,10 @@ def run_module():
     # Load source file
     source_ini = ConfigParser(allow_no_value=True)
     source_ini.read(module.params['source'])
-    print('-- source:')
-    source_ini.write(sys.stdout)
 
     # Load target file
     target_ini = ConfigParser(allow_no_value=True)
     target_ini.read(module.params['target'])
-    print('-- target (orig):')
-    target_ini.write(sys.stdout)
 
     # Merge files
     for section in source_ini.sections():
@@ -119,10 +112,6 @@ def run_module():
     write_options = {}
     if py3:
         write_options['space_around_delimiters'] = not module.params['no_extra_spaces']
-
-    # Print out the merged file
-    print('-- target (merged):')
-    target_ini.write(sys.stdout, **write_options)
 
     # Write out the merged file
     if not module.check_mode and result['changed']:
